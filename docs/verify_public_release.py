@@ -312,13 +312,16 @@ def main():
             for file in installed_py.glob("*.py"):
                 check(file.read_bytes() == (source_root / "src/locreturn" / file.name).read_bytes(),
                       "Installed source differs from verified release/tag")
-            # This sitecustomize is a verifier fixture inside its fresh venv.
-            # It blocks all socket audit events in both parent test and CLI subprocesses.
-            (installed_py.parent / "sitecustomize.py").write_text(
+            # A .pth fixture loads before sitecustomize, which some interpreters
+            # supply in their standard library ahead of venv site-packages.
+            # This applies to the parent test and all CLI Python subprocesses.
+            (installed_py.parent / "_locreturn_verify_no_network.py").write_text(
                 "import sys\ndef _block(event,args):\n"
                 "    if event.startswith('socket.'):\n"
                 "        raise RuntimeError('Network disabled for independent release verification')\n"
                 "sys.addaudithook(_block)\n", encoding="utf-8")
+            (installed_py.parent / "locreturn_verify_no_network.pth").write_text(
+                "import _locreturn_verify_no_network\n", encoding="utf-8")
             run([python, "-I", "-c",
                  "import socket\ntry:\n socket.create_connection(('example.com',443))\nexcept RuntimeError as e:\n print(e)\nelse:\n raise AssertionError('socket block inactive')"],
                 install_root, kind + "-confirm-network-block")
