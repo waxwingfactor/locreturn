@@ -1,0 +1,785 @@
+{
+  "schema": "locreturn.independent-public-verification.v1",
+  "started_utc": "2026-10-15T19:29:49Z",
+  "release_url": "https://github.com/waxwingfactor/locreturn/releases/tag/v1.0.0",
+  "repository": "waxwingfactor/locreturn",
+  "expected_source_commit": "b4606c3d7e940a624c5c436d4bcf8b1ead050083",
+  "environment": {
+    "python": "3.12.13",
+    "platform": "macOS-26.5-arm64-arm-64bit"
+  },
+  "isolation": {
+    "outside_checkout": true,
+    "PYTHONPATH_removed": true,
+    "user_site_disabled": true,
+    "isolated_python_mode": true
+  },
+  "commands": [
+    {
+      "label": "download-sdist-build-tooling",
+      "command": [
+        "<user-home>/.local/bin/python3.12",
+        "-m",
+        "pip",
+        "download",
+        "--only-binary=:all:",
+        "--dest",
+        "<verification-root>/build-dependencies",
+        "setuptools>=77",
+        "wheel"
+      ],
+      "exit_code": 0,
+      "stdout": "Collecting setuptools>=77\n  Using cached setuptools-84.0.0-py3-none-any.whl.metadata (6.6 kB)\nCollecting wheel\n  Using cached wheel-0.48.0-py3-none-any.whl.metadata (2.3 kB)\nCollecting packaging>=24.0 (from wheel)\n  Using cached packaging-26.3-py3-none-any.whl.metadata (3.5 kB)\nUsing cached setuptools-84.0.0-py3-none-any.whl (818 kB)\nUsing cached wheel-0.48.0-py3-none-any.whl (33 kB)\nUsing cached packaging-26.3-py3-none-any.whl (129 kB)\nSaved ./build-dependencies/setuptools-84.0.0-py3-none-any.whl\nSaved ./build-dependencies/wheel-0.48.0-py3-none-any.whl\nSaved ./build-dependencies/packaging-26.3-py3-none-any.whl\nSuccessfully downloaded setuptools wheel packaging\n",
+      "stderr": ""
+    },
+    {
+      "label": "wheel-create-fresh-venv",
+      "command": [
+        "<user-home>/.local/bin/python3.12",
+        "-m",
+        "venv",
+        "<verification-root>/wheel-verification/venv"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "wheel-install-published-artifact",
+      "command": [
+        "<verification-root>/wheel-verification/venv/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--no-index",
+        "--find-links",
+        "<verification-root>/build-dependencies",
+        "<verification-root>/downloads/locreturn-1.0.0-py3-none-any.whl"
+      ],
+      "exit_code": 0,
+      "stdout": "Looking in links: <verification-root>/build-dependencies\nProcessing <verification-root>/downloads/locreturn-1.0.0-py3-none-any.whl\nInstalling collected packages: locreturn\nSuccessfully installed locreturn-1.0.0\n",
+      "stderr": ""
+    },
+    {
+      "label": "wheel-installed-import-origin",
+      "command": [
+        "<verification-root>/wheel-verification/venv/bin/python",
+        "-I",
+        "-c",
+        "import json,locreturn,sys; print(json.dumps({'file':locreturn.__file__,'prefix':sys.prefix,'version':locreturn.__version__}))"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"file\": \"<verification-root>/wheel-verification/venv/lib/python3.12/site-packages/locreturn/__init__.py\", \"prefix\": \"<verification-root>/wheel-verification/venv\", \"version\": \"1.0.0\"}\n",
+      "stderr": ""
+    },
+    {
+      "label": "wheel-confirm-network-block",
+      "command": [
+        "<verification-root>/wheel-verification/venv/bin/python",
+        "-I",
+        "-c",
+        "import socket\ntry:\n socket.create_connection(('example.com',443))\nexcept RuntimeError as e:\n print(e)\nelse:\n raise AssertionError('socket block inactive')"
+      ],
+      "exit_code": 0,
+      "stdout": "Network disabled for independent release verification\n",
+      "stderr": ""
+    },
+    {
+      "label": "wheel-all-published-sdist-tests-offline",
+      "command": [
+        "<verification-root>/wheel-verification/venv/bin/python",
+        "-I",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "<verification-root>/published-sdist/locreturn-1.0.0/tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "test_catalog_rejects_all_nonstring_values (test_adversarial.AdversarialAcceptance.test_catalog_rejects_all_nonstring_values) ... ok\ntest_catalog_rejects_nonobject_top_level (test_adversarial.AdversarialAcceptance.test_catalog_rejects_nonobject_top_level) ... ok\ntest_combined_union_limit_enforced (test_adversarial.AdversarialAcceptance.test_combined_union_limit_enforced) ... ok\ntest_context_addition_removal_and_change_invalidate_incoming (test_adversarial.AdversarialAcceptance.test_context_addition_removal_and_change_invalidate_incoming) ... ok\ntest_context_keys_must_exist_in_current_source (test_adversarial.AdversarialAcceptance.test_context_keys_must_exist_in_current_source) ... ok\ntest_directory_input_is_rejected (test_adversarial.AdversarialAcceptance.test_directory_input_is_rejected) ... ok\ntest_duplicate_keys_rejected_at_every_depth (test_adversarial.AdversarialAcceptance.test_duplicate_keys_rejected_at_every_depth) ... ok\ntest_edited_job_and_locale_are_rejected (test_adversarial.AdversarialAcceptance.test_edited_job_and_locale_are_rejected) ... ok\ntest_edited_task_identity_fields_are_rejected (test_adversarial.AdversarialAcceptance.test_edited_task_identity_fields_are_rejected) ... ok\ntest_every_changed_plan_input_rejects_stale_apply (test_adversarial.AdversarialAcceptance.test_every_changed_plan_input_rejects_stale_apply) ... ok\ntest_existing_output_directory_never_overwritten (test_adversarial.AdversarialAcceptance.test_existing_output_directory_never_overwritten) ... ok\ntest_existing_output_file_never_overwritten (test_adversarial.AdversarialAcceptance.test_existing_output_file_never_overwritten) ... ok\ntest_extreme_nesting_is_controlled_error (test_adversarial.AdversarialAcceptance.test_extreme_nesting_is_controlled_error) ... ok\ntest_fifo_input_is_rejected_without_waiting_for_writer (test_adversarial.AdversarialAcceptance.test_fifo_input_is_rejected_without_waiting_for_writer) ... ok\ntest_generated_size_limit_creates_no_bundle (test_adversarial.AdversarialAcceptance.test_generated_size_limit_creates_no_bundle) ... ok\ntest_input_size_limit (test_adversarial.AdversarialAcceptance.test_input_size_limit) ... ok\ntest_invalid_encoding_and_json_rejected (test_adversarial.AdversarialAcceptance.test_invalid_encoding_and_json_rejected) ... ok\ntest_invalid_input_cli_emits_controlled_error_and_no_output (test_adversarial.AdversarialAcceptance.test_invalid_input_cli_emits_controlled_error_and_no_output) ... ok\ntest_midwrite_failure_cleans_only_created_bundle (test_adversarial.AdversarialAcceptance.test_midwrite_failure_cleans_only_created_bundle) ... ok\ntest_nonfinite_literals_rejected (test_adversarial.AdversarialAcceptance.test_nonfinite_literals_rejected) ... ok\ntest_numeric_type_plan_tamper_is_rejected (test_adversarial.AdversarialAcceptance.test_numeric_type_plan_tamper_is_rejected) ... ok\ntest_output_symlink_never_followed (test_adversarial.AdversarialAcceptance.test_output_symlink_never_followed) ... ok\ntest_plan_tamper_is_rejected_without_output (test_adversarial.AdversarialAcceptance.test_plan_tamper_is_rejected_without_output) ... ok\ntest_relocated_input_bundle_is_usable (test_adversarial.AdversarialAcceptance.test_relocated_input_bundle_is_usable) ... ok\ntest_returned_source_unicode_is_compared_without_normalizing (test_adversarial.AdversarialAcceptance.test_returned_source_unicode_is_compared_without_normalizing) ... ok\ntest_semantic_key_reordering_does_not_stale_plan (test_adversarial.AdversarialAcceptance.test_semantic_key_reordering_does_not_stale_plan) ... ok\ntest_serialization_failure_creates_no_bundle (test_adversarial.AdversarialAcceptance.test_serialization_failure_creates_no_bundle) ... ok\ntest_terminal_control_characters_are_escaped_in_review (test_adversarial.AdversarialAcceptance.test_terminal_control_characters_are_escaped_in_review) ... ok\ntest_text_key_and_entry_limits_enforced (test_adversarial.AdversarialAcceptance.test_text_key_and_entry_limits_enforced) ... ok\ntest_unknown_task_keys_and_fields_are_rejected (test_adversarial.AdversarialAcceptance.test_unknown_task_keys_and_fields_are_rejected) ... ok\ntest_unpaired_surrogates_rejected_in_keys_and_values (test_adversarial.AdversarialAcceptance.test_unpaired_surrogates_rejected_in_keys_and_values) ... ok\ntest_untrusted_baseline_edit_without_resealing_fails (test_adversarial.AdversarialAcceptance.test_untrusted_baseline_edit_without_resealing_fails) ... ok\ntest_end_to_end_review_and_apply (test_cli.CliTests.test_end_to_end_review_and_apply) ... ok\ntest_existing_output_not_overwritten (test_cli.CliTests.test_existing_output_not_overwritten) ... ok\ntest_help_and_version (test_cli.CliTests.test_help_and_version) ... ok\ntest_stale_input_produces_no_output (test_cli.CliTests.test_stale_input_produces_no_output) ... ok\ntest_unsupported_input_fails_without_output (test_cli.CliTests.test_unsupported_input_fails_without_output) ... ok\ntest_complete_target_three_way_matrix (test_core.MergeTests.test_complete_target_three_way_matrix) ... ok\ntest_custom_resolves_new_source (test_core.MergeTests.test_custom_resolves_new_source) ... ok\ntest_decision_reason_and_exact_scope (test_core.MergeTests.test_decision_reason_and_exact_scope) ... ok\ntest_new_and_orphan_keys_preserved (test_core.MergeTests.test_new_and_orphan_keys_preserved) ... ok\ntest_partial_return_is_explicitly_supported (test_core.MergeTests.test_partial_return_is_explicitly_supported) ... ok\ntest_semantic_order_stability (test_core.MergeTests.test_semantic_order_stability) ... ok\ntest_source_changed_disallows_incoming (test_core.MergeTests.test_source_changed_disallows_incoming) ... ok\ntest_source_drift_precedes_convergence (test_core.MergeTests.test_source_drift_precedes_convergence) ... ok\ntest_source_removal_requires_keep_decision (test_core.MergeTests.test_source_removal_requires_keep_decision) ... ok\ntest_target_conflict_choices (test_core.MergeTests.test_target_conflict_choices) ... ok\ntest_unchanged_return_keeps_local_even_when_source_changed (test_core.MergeTests.test_unchanged_return_keeps_local_even_when_source_changed) ... ok\ntest_unicode_and_multiline_exact_no_normalization (test_core.MergeTests.test_unicode_and_multiline_exact_no_normalization) ... ok\n\n----------------------------------------------------------------------\nRan 49 tests in 0.577s\n\nOK\n"
+    },
+    {
+      "label": "wheel-published-example-offline",
+      "command": [
+        "<verification-root>/wheel-verification/venv/bin/python",
+        "-I",
+        "<verification-root>/published-sdist/locreturn-1.0.0/examples/demo.py"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"command\": \"pack\", \"entries\": 3, \"job_id\": \"e834fc5ae4d46063fdd86a09034c8a11d6ff8c1c7d4d1fa9084420bfe3d738ab\"}\n{\"command\": \"plan\", \"conflicts\": 1, \"counts\": {\"orphan-target\": 1, \"ready\": 1, \"skipped\": 1, \"target-conflict\": 1}, \"plan_id\": \"c5d140b5f48f3b09c5597a2ad1fd64a123f4ca0555680588f85992e99609f715\"}\n\n{\"changes\": 1, \"command\": \"apply\", \"plan_id\": \"c5d140b5f48f3b09c5597a2ad1fd64a123f4ca0555680588f85992e99609f715\", \"receipt_id\": \"cf187ec6801bd0f8177e786e32a688ae92531916fc390c6091ccbfed2eb919d7\", \"resolved_conflicts\": 1}\n\nConstructed round trip passed: safe edit, concurrent correction, orphan preservation, unresolved and stale refusal.\n",
+      "stderr": ""
+    },
+    {
+      "label": "wheel-console-script",
+      "command": [
+        "<verification-root>/wheel-verification/venv/bin/locreturn",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "locreturn 1.0.0\n",
+      "stderr": ""
+    },
+    {
+      "label": "offline-pack",
+      "command": [
+        "<verification-root>/wheel-verification/venv/bin/python",
+        "-I",
+        "-m",
+        "locreturn",
+        "pack",
+        "--source",
+        "en.json",
+        "--target",
+        "fr.json",
+        "--context",
+        "context.json",
+        "--source-locale",
+        "en",
+        "--target-locale",
+        "fr",
+        "--out",
+        "job"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"command\": \"pack\", \"entries\": 4, \"job_id\": \"7062c3977e1a76a8471b3c34a5cc5e56446217b5e206a639f0730fd188a3e192\"}\n",
+      "stderr": ""
+    },
+    {
+      "label": "offline-plan-conflicts",
+      "command": [
+        "<verification-root>/wheel-verification/venv/bin/python",
+        "-I",
+        "-m",
+        "locreturn",
+        "plan",
+        "--source",
+        "en.json",
+        "--target",
+        "fr.json",
+        "--context",
+        "context.json",
+        "--baseline",
+        "job/baseline.json",
+        "--returned",
+        "job/task.json",
+        "--out",
+        "review"
+      ],
+      "exit_code": 3,
+      "stdout": "{\"command\": \"plan\", \"conflicts\": 3, \"counts\": {\"orphan-target\": 1, \"ready\": 1, \"source-changed\": 1, \"source-removed\": 1, \"target-conflict\": 1}, \"plan_id\": \"27dd276ae6523fe52c1d77575a39a488f79d8ea1bb15b39346f356adc55b0887\"}\n",
+      "stderr": ""
+    },
+    {
+      "label": "offline-unresolved-refusal",
+      "command": [
+        "<verification-root>/wheel-verification/venv/bin/python",
+        "-I",
+        "-m",
+        "locreturn",
+        "apply",
+        "--source",
+        "en.json",
+        "--target",
+        "fr.json",
+        "--context",
+        "context.json",
+        "--baseline",
+        "job/baseline.json",
+        "--returned",
+        "job/task.json",
+        "--plan",
+        "review/plan.json",
+        "--out",
+        "unresolved"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\": \"decision action unresolved or disallowed for source-removed\"}\n"
+    },
+    {
+      "label": "offline-source-gate-refusal",
+      "command": [
+        "<verification-root>/wheel-verification/venv/bin/python",
+        "-I",
+        "-m",
+        "locreturn",
+        "apply",
+        "--source",
+        "en.json",
+        "--target",
+        "fr.json",
+        "--context",
+        "context.json",
+        "--baseline",
+        "job/baseline.json",
+        "--returned",
+        "job/task.json",
+        "--plan",
+        "review/plan.json",
+        "--decisions",
+        "bad-decisions.json",
+        "--out",
+        "source-bypass"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\": \"decision action unresolved or disallowed for source-changed\"}\n"
+    },
+    {
+      "label": "relocated-offline-apply",
+      "command": [
+        "<verification-root>/wheel-verification/venv/bin/python",
+        "-I",
+        "-m",
+        "locreturn",
+        "apply",
+        "--source",
+        "en.json",
+        "--target",
+        "fr.json",
+        "--context",
+        "context.json",
+        "--baseline",
+        "job/baseline.json",
+        "--returned",
+        "job/task.json",
+        "--plan",
+        "review/plan.json",
+        "--decisions",
+        "review/decisions.json",
+        "--out",
+        "merged"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"changes\": 2, \"command\": \"apply\", \"plan_id\": \"27dd276ae6523fe52c1d77575a39a488f79d8ea1bb15b39346f356adc55b0887\", \"receipt_id\": \"97ec2d70aa624027bc0199d4cd1daf05a23958c19ec02fa013ecc81fbe6e761f\", \"resolved_conflicts\": 3}\n",
+      "stderr": ""
+    },
+    {
+      "label": "offline-stale-plan-refusal",
+      "command": [
+        "<verification-root>/wheel-verification/venv/bin/python",
+        "-I",
+        "-m",
+        "locreturn",
+        "apply",
+        "--source",
+        "en.json",
+        "--target",
+        "fr.json",
+        "--context",
+        "context.json",
+        "--baseline",
+        "job/baseline.json",
+        "--returned",
+        "job/task.json",
+        "--plan",
+        "review/plan.json",
+        "--decisions",
+        "review/decisions.json",
+        "--out",
+        "stale"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\": \"plan is stale or modified; regenerate and review a new plan\"}\n"
+    },
+    {
+      "label": "sdist-create-fresh-venv",
+      "command": [
+        "<user-home>/.local/bin/python3.12",
+        "-m",
+        "venv",
+        "<verification-root>/sdist-verification/venv"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "sdist-install-published-artifact",
+      "command": [
+        "<verification-root>/sdist-verification/venv/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--no-index",
+        "--find-links",
+        "<verification-root>/build-dependencies",
+        "<verification-root>/downloads/locreturn-1.0.0.tar.gz"
+      ],
+      "exit_code": 0,
+      "stdout": "Looking in links: <verification-root>/build-dependencies\nProcessing <verification-root>/downloads/locreturn-1.0.0.tar.gz\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Getting requirements to build wheel: started\n  Getting requirements to build wheel: finished with status 'done'\n  Preparing metadata (pyproject.toml): started\n  Preparing metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: locreturn\n  Building wheel for locreturn (pyproject.toml): started\n  Building wheel for locreturn (pyproject.toml): finished with status 'done'\n  Created wheel for locreturn: filename=locreturn-1.0.0-py3-none-any.whl size=12164 sha256=0164723a83200bb9651588db9c94642de747880ca3bf240cc8498690cea71066\n  Stored in directory: <user-home>/Library/Caches/pip/wheels/4e/6b/82/b0c99a013728c6bd968edc49117b32de135ffd23cf31ba0e53\nSuccessfully built locreturn\nInstalling collected packages: locreturn\nSuccessfully installed locreturn-1.0.0\n",
+      "stderr": ""
+    },
+    {
+      "label": "sdist-installed-import-origin",
+      "command": [
+        "<verification-root>/sdist-verification/venv/bin/python",
+        "-I",
+        "-c",
+        "import json,locreturn,sys; print(json.dumps({'file':locreturn.__file__,'prefix':sys.prefix,'version':locreturn.__version__}))"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"file\": \"<verification-root>/sdist-verification/venv/lib/python3.12/site-packages/locreturn/__init__.py\", \"prefix\": \"<verification-root>/sdist-verification/venv\", \"version\": \"1.0.0\"}\n",
+      "stderr": ""
+    },
+    {
+      "label": "sdist-confirm-network-block",
+      "command": [
+        "<verification-root>/sdist-verification/venv/bin/python",
+        "-I",
+        "-c",
+        "import socket\ntry:\n socket.create_connection(('example.com',443))\nexcept RuntimeError as e:\n print(e)\nelse:\n raise AssertionError('socket block inactive')"
+      ],
+      "exit_code": 0,
+      "stdout": "Network disabled for independent release verification\n",
+      "stderr": ""
+    },
+    {
+      "label": "sdist-all-published-sdist-tests-offline",
+      "command": [
+        "<verification-root>/sdist-verification/venv/bin/python",
+        "-I",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "<verification-root>/published-sdist/locreturn-1.0.0/tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "test_catalog_rejects_all_nonstring_values (test_adversarial.AdversarialAcceptance.test_catalog_rejects_all_nonstring_values) ... ok\ntest_catalog_rejects_nonobject_top_level (test_adversarial.AdversarialAcceptance.test_catalog_rejects_nonobject_top_level) ... ok\ntest_combined_union_limit_enforced (test_adversarial.AdversarialAcceptance.test_combined_union_limit_enforced) ... ok\ntest_context_addition_removal_and_change_invalidate_incoming (test_adversarial.AdversarialAcceptance.test_context_addition_removal_and_change_invalidate_incoming) ... ok\ntest_context_keys_must_exist_in_current_source (test_adversarial.AdversarialAcceptance.test_context_keys_must_exist_in_current_source) ... ok\ntest_directory_input_is_rejected (test_adversarial.AdversarialAcceptance.test_directory_input_is_rejected) ... ok\ntest_duplicate_keys_rejected_at_every_depth (test_adversarial.AdversarialAcceptance.test_duplicate_keys_rejected_at_every_depth) ... ok\ntest_edited_job_and_locale_are_rejected (test_adversarial.AdversarialAcceptance.test_edited_job_and_locale_are_rejected) ... ok\ntest_edited_task_identity_fields_are_rejected (test_adversarial.AdversarialAcceptance.test_edited_task_identity_fields_are_rejected) ... ok\ntest_every_changed_plan_input_rejects_stale_apply (test_adversarial.AdversarialAcceptance.test_every_changed_plan_input_rejects_stale_apply) ... ok\ntest_existing_output_directory_never_overwritten (test_adversarial.AdversarialAcceptance.test_existing_output_directory_never_overwritten) ... ok\ntest_existing_output_file_never_overwritten (test_adversarial.AdversarialAcceptance.test_existing_output_file_never_overwritten) ... ok\ntest_extreme_nesting_is_controlled_error (test_adversarial.AdversarialAcceptance.test_extreme_nesting_is_controlled_error) ... ok\ntest_fifo_input_is_rejected_without_waiting_for_writer (test_adversarial.AdversarialAcceptance.test_fifo_input_is_rejected_without_waiting_for_writer) ... ok\ntest_generated_size_limit_creates_no_bundle (test_adversarial.AdversarialAcceptance.test_generated_size_limit_creates_no_bundle) ... ok\ntest_input_size_limit (test_adversarial.AdversarialAcceptance.test_input_size_limit) ... ok\ntest_invalid_encoding_and_json_rejected (test_adversarial.AdversarialAcceptance.test_invalid_encoding_and_json_rejected) ... ok\ntest_invalid_input_cli_emits_controlled_error_and_no_output (test_adversarial.AdversarialAcceptance.test_invalid_input_cli_emits_controlled_error_and_no_output) ... ok\ntest_midwrite_failure_cleans_only_created_bundle (test_adversarial.AdversarialAcceptance.test_midwrite_failure_cleans_only_created_bundle) ... ok\ntest_nonfinite_literals_rejected (test_adversarial.AdversarialAcceptance.test_nonfinite_literals_rejected) ... ok\ntest_numeric_type_plan_tamper_is_rejected (test_adversarial.AdversarialAcceptance.test_numeric_type_plan_tamper_is_rejected) ... ok\ntest_output_symlink_never_followed (test_adversarial.AdversarialAcceptance.test_output_symlink_never_followed) ... ok\ntest_plan_tamper_is_rejected_without_output (test_adversarial.AdversarialAcceptance.test_plan_tamper_is_rejected_without_output) ... ok\ntest_relocated_input_bundle_is_usable (test_adversarial.AdversarialAcceptance.test_relocated_input_bundle_is_usable) ... ok\ntest_returned_source_unicode_is_compared_without_normalizing (test_adversarial.AdversarialAcceptance.test_returned_source_unicode_is_compared_without_normalizing) ... ok\ntest_semantic_key_reordering_does_not_stale_plan (test_adversarial.AdversarialAcceptance.test_semantic_key_reordering_does_not_stale_plan) ... ok\ntest_serialization_failure_creates_no_bundle (test_adversarial.AdversarialAcceptance.test_serialization_failure_creates_no_bundle) ... ok\ntest_terminal_control_characters_are_escaped_in_review (test_adversarial.AdversarialAcceptance.test_terminal_control_characters_are_escaped_in_review) ... ok\ntest_text_key_and_entry_limits_enforced (test_adversarial.AdversarialAcceptance.test_text_key_and_entry_limits_enforced) ... ok\ntest_unknown_task_keys_and_fields_are_rejected (test_adversarial.AdversarialAcceptance.test_unknown_task_keys_and_fields_are_rejected) ... ok\ntest_unpaired_surrogates_rejected_in_keys_and_values (test_adversarial.AdversarialAcceptance.test_unpaired_surrogates_rejected_in_keys_and_values) ... ok\ntest_untrusted_baseline_edit_without_resealing_fails (test_adversarial.AdversarialAcceptance.test_untrusted_baseline_edit_without_resealing_fails) ... ok\ntest_end_to_end_review_and_apply (test_cli.CliTests.test_end_to_end_review_and_apply) ... ok\ntest_existing_output_not_overwritten (test_cli.CliTests.test_existing_output_not_overwritten) ... ok\ntest_help_and_version (test_cli.CliTests.test_help_and_version) ... ok\ntest_stale_input_produces_no_output (test_cli.CliTests.test_stale_input_produces_no_output) ... ok\ntest_unsupported_input_fails_without_output (test_cli.CliTests.test_unsupported_input_fails_without_output) ... ok\ntest_complete_target_three_way_matrix (test_core.MergeTests.test_complete_target_three_way_matrix) ... ok\ntest_custom_resolves_new_source (test_core.MergeTests.test_custom_resolves_new_source) ... ok\ntest_decision_reason_and_exact_scope (test_core.MergeTests.test_decision_reason_and_exact_scope) ... ok\ntest_new_and_orphan_keys_preserved (test_core.MergeTests.test_new_and_orphan_keys_preserved) ... ok\ntest_partial_return_is_explicitly_supported (test_core.MergeTests.test_partial_return_is_explicitly_supported) ... ok\ntest_semantic_order_stability (test_core.MergeTests.test_semantic_order_stability) ... ok\ntest_source_changed_disallows_incoming (test_core.MergeTests.test_source_changed_disallows_incoming) ... ok\ntest_source_drift_precedes_convergence (test_core.MergeTests.test_source_drift_precedes_convergence) ... ok\ntest_source_removal_requires_keep_decision (test_core.MergeTests.test_source_removal_requires_keep_decision) ... ok\ntest_target_conflict_choices (test_core.MergeTests.test_target_conflict_choices) ... ok\ntest_unchanged_return_keeps_local_even_when_source_changed (test_core.MergeTests.test_unchanged_return_keeps_local_even_when_source_changed) ... ok\ntest_unicode_and_multiline_exact_no_normalization (test_core.MergeTests.test_unicode_and_multiline_exact_no_normalization) ... ok\n\n----------------------------------------------------------------------\nRan 49 tests in 0.634s\n\nOK\n"
+    },
+    {
+      "label": "sdist-published-example-offline",
+      "command": [
+        "<verification-root>/sdist-verification/venv/bin/python",
+        "-I",
+        "<verification-root>/published-sdist/locreturn-1.0.0/examples/demo.py"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"command\": \"pack\", \"entries\": 3, \"job_id\": \"e834fc5ae4d46063fdd86a09034c8a11d6ff8c1c7d4d1fa9084420bfe3d738ab\"}\n{\"command\": \"plan\", \"conflicts\": 1, \"counts\": {\"orphan-target\": 1, \"ready\": 1, \"skipped\": 1, \"target-conflict\": 1}, \"plan_id\": \"c5d140b5f48f3b09c5597a2ad1fd64a123f4ca0555680588f85992e99609f715\"}\n\n{\"changes\": 1, \"command\": \"apply\", \"plan_id\": \"c5d140b5f48f3b09c5597a2ad1fd64a123f4ca0555680588f85992e99609f715\", \"receipt_id\": \"cf187ec6801bd0f8177e786e32a688ae92531916fc390c6091ccbfed2eb919d7\", \"resolved_conflicts\": 1}\n\nConstructed round trip passed: safe edit, concurrent correction, orphan preservation, unresolved and stale refusal.\n",
+      "stderr": ""
+    },
+    {
+      "label": "sdist-console-script",
+      "command": [
+        "<verification-root>/sdist-verification/venv/bin/locreturn",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "locreturn 1.0.0\n",
+      "stderr": ""
+    },
+    {
+      "label": "offline-pack",
+      "command": [
+        "<verification-root>/sdist-verification/venv/bin/python",
+        "-I",
+        "-m",
+        "locreturn",
+        "pack",
+        "--source",
+        "en.json",
+        "--target",
+        "fr.json",
+        "--context",
+        "context.json",
+        "--source-locale",
+        "en",
+        "--target-locale",
+        "fr",
+        "--out",
+        "job"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"command\": \"pack\", \"entries\": 4, \"job_id\": \"7062c3977e1a76a8471b3c34a5cc5e56446217b5e206a639f0730fd188a3e192\"}\n",
+      "stderr": ""
+    },
+    {
+      "label": "offline-plan-conflicts",
+      "command": [
+        "<verification-root>/sdist-verification/venv/bin/python",
+        "-I",
+        "-m",
+        "locreturn",
+        "plan",
+        "--source",
+        "en.json",
+        "--target",
+        "fr.json",
+        "--context",
+        "context.json",
+        "--baseline",
+        "job/baseline.json",
+        "--returned",
+        "job/task.json",
+        "--out",
+        "review"
+      ],
+      "exit_code": 3,
+      "stdout": "{\"command\": \"plan\", \"conflicts\": 3, \"counts\": {\"orphan-target\": 1, \"ready\": 1, \"source-changed\": 1, \"source-removed\": 1, \"target-conflict\": 1}, \"plan_id\": \"27dd276ae6523fe52c1d77575a39a488f79d8ea1bb15b39346f356adc55b0887\"}\n",
+      "stderr": ""
+    },
+    {
+      "label": "offline-unresolved-refusal",
+      "command": [
+        "<verification-root>/sdist-verification/venv/bin/python",
+        "-I",
+        "-m",
+        "locreturn",
+        "apply",
+        "--source",
+        "en.json",
+        "--target",
+        "fr.json",
+        "--context",
+        "context.json",
+        "--baseline",
+        "job/baseline.json",
+        "--returned",
+        "job/task.json",
+        "--plan",
+        "review/plan.json",
+        "--out",
+        "unresolved"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\": \"decision action unresolved or disallowed for source-removed\"}\n"
+    },
+    {
+      "label": "offline-source-gate-refusal",
+      "command": [
+        "<verification-root>/sdist-verification/venv/bin/python",
+        "-I",
+        "-m",
+        "locreturn",
+        "apply",
+        "--source",
+        "en.json",
+        "--target",
+        "fr.json",
+        "--context",
+        "context.json",
+        "--baseline",
+        "job/baseline.json",
+        "--returned",
+        "job/task.json",
+        "--plan",
+        "review/plan.json",
+        "--decisions",
+        "bad-decisions.json",
+        "--out",
+        "source-bypass"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\": \"decision action unresolved or disallowed for source-changed\"}\n"
+    },
+    {
+      "label": "relocated-offline-apply",
+      "command": [
+        "<verification-root>/sdist-verification/venv/bin/python",
+        "-I",
+        "-m",
+        "locreturn",
+        "apply",
+        "--source",
+        "en.json",
+        "--target",
+        "fr.json",
+        "--context",
+        "context.json",
+        "--baseline",
+        "job/baseline.json",
+        "--returned",
+        "job/task.json",
+        "--plan",
+        "review/plan.json",
+        "--decisions",
+        "review/decisions.json",
+        "--out",
+        "merged"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"changes\": 2, \"command\": \"apply\", \"plan_id\": \"27dd276ae6523fe52c1d77575a39a488f79d8ea1bb15b39346f356adc55b0887\", \"receipt_id\": \"97ec2d70aa624027bc0199d4cd1daf05a23958c19ec02fa013ecc81fbe6e761f\", \"resolved_conflicts\": 3}\n",
+      "stderr": ""
+    },
+    {
+      "label": "offline-stale-plan-refusal",
+      "command": [
+        "<verification-root>/sdist-verification/venv/bin/python",
+        "-I",
+        "-m",
+        "locreturn",
+        "apply",
+        "--source",
+        "en.json",
+        "--target",
+        "fr.json",
+        "--context",
+        "context.json",
+        "--baseline",
+        "job/baseline.json",
+        "--returned",
+        "job/task.json",
+        "--plan",
+        "review/plan.json",
+        "--decisions",
+        "review/decisions.json",
+        "--out",
+        "stale"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\": \"plan is stale or modified; regenerate and review a new plan\"}\n"
+    }
+  ],
+  "status": "passed",
+  "public_release": {
+    "id": 414192393,
+    "published_at": "2026-10-15T19:29:20Z",
+    "tag_name": "v1.0.0",
+    "source_commit": "b4606c3d7e940a624c5c436d4bcf8b1ead050083"
+  },
+  "public_ci": {
+    "run_url": "https://github.com/waxwingfactor/locreturn/actions/runs/38794149241",
+    "head_sha": "b4606c3d7e940a624c5c436d4bcf8b1ead050083",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "tests (macos-latest, 3.12)",
+        "conclusion": "success"
+      },
+      {
+        "name": "tests (ubuntu-latest, 3.10)",
+        "conclusion": "success"
+      },
+      {
+        "name": "distributions",
+        "conclusion": "success"
+      },
+      {
+        "name": "tests (windows-latest, 3.12)",
+        "conclusion": "success"
+      },
+      {
+        "name": "tests (ubuntu-latest, 3.14)",
+        "conclusion": "success"
+      },
+      {
+        "name": "quality-gate",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "downloads": [
+    {
+      "name": "locreturn-1.0.0-py3-none-any.whl",
+      "url": "https://github.com/waxwingfactor/locreturn/releases/download/v1.0.0/locreturn-1.0.0-py3-none-any.whl",
+      "size": 12164,
+      "sha256": "e5633fadd34dcd7b8a325b291da9eab9c5e38045ec17208c7738b99590c85472",
+      "public_unauthenticated_http": 200
+    },
+    {
+      "name": "locreturn-1.0.0.tar.gz",
+      "url": "https://github.com/waxwingfactor/locreturn/releases/download/v1.0.0/locreturn-1.0.0.tar.gz",
+      "size": 28573,
+      "sha256": "39353ce503da41a0af90c39a6b409a8afc1538f34c7598f2150eab7eb080e934",
+      "public_unauthenticated_http": 200
+    },
+    {
+      "name": "SHA256SUMS",
+      "url": "https://github.com/waxwingfactor/locreturn/releases/download/v1.0.0/SHA256SUMS",
+      "size": 188,
+      "sha256": "9d20056f9319c35ad8f9994ca8116327113263e821197e68768f9f91ea6a47e8",
+      "public_unauthenticated_http": 200
+    },
+    {
+      "name": "PROVENANCE.json",
+      "url": "https://github.com/waxwingfactor/locreturn/releases/download/v1.0.0/PROVENANCE.json",
+      "size": 443,
+      "sha256": "2d0e4cae00e5cbc2b8e0401a61e1fb462953202ce035969edf3b39f1f682af06",
+      "public_unauthenticated_http": 200
+    }
+  ],
+  "provenance": {
+    "repository": "waxwingfactor/locreturn",
+    "source_commit": "b4606c3d7e940a624c5c436d4bcf8b1ead050083",
+    "run_url": "https://github.com/waxwingfactor/locreturn/actions/runs/38794149241",
+    "python": "3.12.15",
+    "artifacts": {
+      "locreturn-1.0.0-py3-none-any.whl": "e5633fadd34dcd7b8a325b291da9eab9c5e38045ec17208c7738b99590c85472",
+      "locreturn-1.0.0.tar.gz": "39353ce503da41a0af90c39a6b409a8afc1538f34c7598f2150eab7eb080e934"
+    }
+  },
+  "source_comparison": {
+    "tag_archive_sha256": "70652f4b28cec3289f37541bf1741925205e4a0730f52095d4b5751640b8db91",
+    "published_sdist_files_equal_tag": [
+      {
+        "path": "src/locreturn/files.py",
+        "sha256": "046fd69abc13ead631d3edd1c04501a6e89e69b55db97ca6447909085b7d778b"
+      },
+      {
+        "path": "src/locreturn/__init__.py",
+        "sha256": "00ba8f3ecc78941570ef89dab443c62a1c654b7809853f93d240bc708c0eeedb"
+      },
+      {
+        "path": "src/locreturn/core.py",
+        "sha256": "8e2202007a9c722b23d1975a1b4d48ab699d55f8bbb6acc5791f38557241b352"
+      },
+      {
+        "path": "src/locreturn/cli.py",
+        "sha256": "fbffed8b8525634ce6801005cd71c645f2124a9e2cd968fbcd586403a96a2154"
+      },
+      {
+        "path": "src/locreturn/__main__.py",
+        "sha256": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d"
+      },
+      {
+        "path": "tests/test_core.py",
+        "sha256": "5c4efd17cd6ad27f3553b325c796e059ee0424e0a7b6046afd652c1095963bf3"
+      },
+      {
+        "path": "tests/test_adversarial.py",
+        "sha256": "bffea74a52b4447d136162961284eb6255e015dcc96e438e6d64be60e20bfc0a"
+      },
+      {
+        "path": "tests/test_cli.py",
+        "sha256": "5df7b7ee1de0251eda793af11baf86db4540c7ab236372fce7ad7aa47081f3c4"
+      },
+      {
+        "path": "examples/en.json",
+        "sha256": "bf596a84dec03f36e0ca9060b17aec7d68b2fa0537772920474540963a310a01"
+      },
+      {
+        "path": "examples/fr.json",
+        "sha256": "a85e240a4dfd1f65b08f1f5ed5a1183a4b6c94901ec7e18afda47c330766cf5a"
+      },
+      {
+        "path": "examples/demo.py",
+        "sha256": "cd8a750c69cb2cdbcae1f6d375ab3a0e32e72fc5e9dc6afa4ec417fbf35f2ad9"
+      },
+      {
+        "path": "docs/CONTRACTS.md",
+        "sha256": "5286a5011ea013a28b1dbf5e85a7bcc150f7a4302af90aa7f76d23fa00ed20bb"
+      },
+      {
+        "path": "docs/VERIFICATION.md",
+        "sha256": "f478bb312218e10aa0ebc4de9406f193af849bc972a668512cd52ea87dac2f73"
+      },
+      {
+        "path": "docs/RESEARCH.md",
+        "sha256": "eccc243f921bf69e1d9c3753120b6b2199e48aa996082ddb65e8d2ec6ba3531c"
+      }
+    ],
+    "wheel_code_equal_tag": [
+      {
+        "path": "locreturn/__init__.py",
+        "sha256": "00ba8f3ecc78941570ef89dab443c62a1c654b7809853f93d240bc708c0eeedb"
+      },
+      {
+        "path": "locreturn/__main__.py",
+        "sha256": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d"
+      },
+      {
+        "path": "locreturn/cli.py",
+        "sha256": "fbffed8b8525634ce6801005cd71c645f2124a9e2cd968fbcd586403a96a2154"
+      },
+      {
+        "path": "locreturn/core.py",
+        "sha256": "8e2202007a9c722b23d1975a1b4d48ab699d55f8bbb6acc5791f38557241b352"
+      },
+      {
+        "path": "locreturn/files.py",
+        "sha256": "046fd69abc13ead631d3edd1c04501a6e89e69b55db97ca6447909085b7d778b"
+      }
+    ],
+    "wheel_RECORD_valid": true
+  },
+  "build_dependencies": [
+    {
+      "name": "packaging-26.3-py3-none-any.whl",
+      "sha256": "d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c"
+    },
+    {
+      "name": "setuptools-84.0.0-py3-none-any.whl",
+      "sha256": "51a52592b3b99e102b609654876bd65f19f999935166d1352678931132b0c670"
+    },
+    {
+      "name": "wheel-0.48.0-py3-none-any.whl",
+      "sha256": "3217dcc807155e45db462d7ef2431f5ddda0d7273b700d05a67b271ceb1287ab"
+    }
+  ],
+  "installations": [
+    {
+      "artifact": "locreturn-1.0.0-py3-none-any.whl",
+      "kind": "wheel",
+      "version": "1.0.0",
+      "import_origin": "<verification-root>/wheel-verification/venv/lib/python3.12/site-packages/locreturn/__init__.py",
+      "test_count": 49,
+      "tests_passed": true,
+      "example_passed": true,
+      "independent_flow": {
+        "classifications": {
+          "gone": "source-removed",
+          "greet": "target-conflict",
+          "meaning": "source-changed",
+          "new": "ready",
+          "orphan": "orphan-target"
+        },
+        "output": {
+          "gone": "Parti",
+          "greet": "Local review",
+          "meaning": "Sens revu",
+          "new": "Nouveau",
+          "orphan": "Retain"
+        },
+        "receipt_output_sha256": "16924597e20a467156ea92b8fd912e0a24ac470f7c2e870cc5e6323cde744995",
+        "relocated": true,
+        "inputs_unchanged": true,
+        "network_blocked": true,
+        "unresolved_refused": true,
+        "source_gate_refused": true,
+        "stale_refused": true
+      }
+    },
+    {
+      "artifact": "locreturn-1.0.0.tar.gz",
+      "kind": "sdist",
+      "version": "1.0.0",
+      "import_origin": "<verification-root>/sdist-verification/venv/lib/python3.12/site-packages/locreturn/__init__.py",
+      "test_count": 49,
+      "tests_passed": true,
+      "example_passed": true,
+      "independent_flow": {
+        "classifications": {
+          "gone": "source-removed",
+          "greet": "target-conflict",
+          "meaning": "source-changed",
+          "new": "ready",
+          "orphan": "orphan-target"
+        },
+        "output": {
+          "gone": "Parti",
+          "greet": "Local review",
+          "meaning": "Sens revu",
+          "new": "Nouveau",
+          "orphan": "Retain"
+        },
+        "receipt_output_sha256": "16924597e20a467156ea92b8fd912e0a24ac470f7c2e870cc5e6323cde744995",
+        "relocated": true,
+        "inputs_unchanged": true,
+        "network_blocked": true,
+        "unresolved_refused": true,
+        "source_gate_refused": true,
+        "stale_refused": true
+      }
+    }
+  ],
+  "completed_utc": "2026-10-15T19:30:01Z"
+}
