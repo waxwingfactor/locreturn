@@ -12,7 +12,7 @@ The tests cover concurrent deletion/addition, empty vs absent targets, source/co
 
 ## Release process
 
-The protected main branch requires `quality-gate`, aggregating four OS/Python test jobs (Linux 3.10/3.14, macOS 3.12, Windows 3.12) and Linux 3.12 distribution installation checks. This targets minimum/latest interpreter compatibility and cross-platform filesystem behavior without multiplying every combination. The single maintainer records separate AI-agent review evidence in PR comments and merges only after required checks pass; no human self-approval is represented as independent review.
+The protected main branch requires `quality-gate`, aggregating four OS/Python test jobs (Linux 3.10/3.14, macOS 3.12, Windows 3.12) and Linux 3.12 distribution installation checks. This targets minimum/recent interpreter compatibility and cross-platform filesystem behavior without multiplying every combination. The single maintainer records separate AI-agent review evidence in PR comments and merges only after required checks pass; no human self-approval is represented as independent review.
 
 CI builds wheel/sdist, installs both outside the checkout in separate fresh environments, runs the full suite and constructed example, and uploads artifacts with a manifest recording source revision and Actions run. Release assets are taken from the passing main-branch CI build, with a SHA-256 checksum file. These provenance records identify the build; they are not third-party signatures.
 

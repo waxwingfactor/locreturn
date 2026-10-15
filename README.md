@@ -93,4 +93,4 @@ python3 examples/demo.py
 python3 -m build
 ```
 
-CI checks the minimum and newest supported Python generations on Linux (3.10/3.14), filesystem behavior on macOS/Windows (3.12), and wheel/sdist installation outside the checkout (Linux 3.12). The CLI and v1 JSON schemas are supported interfaces; internal Python modules are not a stable library API. MIT licensed.
+CI checks Python 3.10/3.14 on Linux, filesystem behavior on macOS/Windows (3.12), and wheel/sdist installation outside the checkout (Linux 3.12). The CLI and v1 JSON schemas are supported interfaces; internal Python modules are not a stable library API. MIT licensed.
