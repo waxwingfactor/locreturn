@@ -16,4 +16,30 @@ The protected main branch requires `quality-gate`, aggregating four OS/Python te
 
 CI builds wheel/sdist, installs both outside the checkout in separate fresh environments, runs the full suite and constructed example, and uploads artifacts with a manifest recording source revision and Actions run. Release assets are taken from the passing main-branch CI build, with a SHA-256 checksum file. These provenance records identify the build; they are not third-party signatures.
 
-Actual post-publication download and installation evidence will be recorded after release in this document and the release notes. A local build or CI artifact alone is not described as a verified public release.
+## Actual public release verification, 2026-10-15
+
+[Release v1.0.0](https://github.com/waxwingfactor/locreturn/releases/tag/v1.0.0) was published at 19:29:20 UTC. A separate AI testing agent independently downloaded its **actual public assets without authentication**, then verified them from 19:29:49 to 19:30:01 UTC on macOS 26.5 arm64 / Python 3.12.13. [Redacted raw evidence](PUBLIC_VERIFICATION.json) records requests, exact commands, results, environment, code comparisons and hashes. Its SHA-256 is `d940bfaa33c79ca696fb973c840d4c065f693f751a98435989614ab9b38ed955`.
+
+| Published artifact | SHA-256 |
+|---|---|
+| `locreturn-1.0.0-py3-none-any.whl` | `e5633fadd34dcd7b8a325b291da9eab9c5e38045ec17208c7738b99590c85472` |
+| `locreturn-1.0.0.tar.gz` | `39353ce503da41a0af90c39a6b409a8afc1538f34c7598f2150eab7eb080e934` |
+
+The public tag resolves to source commit `b4606c3d7e940a624c5c436d4bcf8b1ead050083`. [Main CI run 38794149241](https://github.com/waxwingfactor/locreturn/actions/runs/38794149241) and all six jobs passed for that revision. Downloaded checksums and provenance match artifact bytes; the lead also checked GitHub's release-asset digest fields. The independent verifier checked the wheel RECORD hashes and all five Python code files against the public source tag. The sdist's source, tests, examples and documentation match the tag.
+
+Separate fresh environments installed the downloaded wheel and built/installed the downloaded sdist, using `--no-index` and predownloaded build-tool wheels for the latter. No editable installation, checkout import, `PYTHONPATH` or user-site leakage was used. Each installed artifact passed all **49 published acceptance tests**, the published demo, the console entrypoint, and an independently constructed workflow. Import origins were inside each environment's site-packages.
+
+For both installs, a Python audit hook blocked all socket events and a connection probe confirmed the block. The full tests, example and independent workflow then ran under that block. The independent workflow moved its catalogs/task/plan after review, preserved local target corrections and orphan targets, required source/context/target conflict decisions, checked the receipt's output hash and untouched input targets, and refused unresolved conflicts, stale-source incoming decisions and stale plans without final output.
+
+The lead separately downloaded the actual public wheel anonymously (HTTP 200), checked the same SHA-256, installed it in another fresh environment with `--no-index --no-deps`, verified isolated import/version and ran the installed console help. An initial lead harness used a virtual-environment API that failed to bootstrap this bundled interpreter; changing that harness to the documented `python -m venv` command succeeded. No published artifact was changed.
+
+The [independent verifier](verify_public_release.py) is preserved for reproduction on macOS/Linux. It fetches public assets and the public tag, has no local-dist fallback, and requires a new output directory outside source trees/Git checkouts. The reproduction script now detects and enforces that boundary; the original run's reported directory was also outside the development checkout. A further lead reproduction correctly failed its socket-block probe when a host Python supplied a standard-library `sitecustomize` that shadowed the fixture. The current verifier loads its audit hook through a uniquely named module and `.pth` file to avoid that host interaction; the original independent report's successful socket probe remains unchanged. The revised verifier then passed a complete lead reproduction against public downloads, including both 49-test suites, socket probes and relocated workflows. For example:
+
+```sh
+python3.12 docs/verify_public_release.py \
+  --release-url https://github.com/waxwingfactor/locreturn/releases/tag/v1.0.0 \
+  --source-commit b4606c3d7e940a624c5c436d4bcf8b1ead050083 \
+  --ci-run-id 38794149241 --out /tmp/locreturn-verification-run
+```
+
+This record describes synthetic acceptance scenarios, not customer adoption, translation-quality validation or production deployment. Public wheel/sdist verification was on one macOS/Python environment; cross-platform evidence is the separate CI matrix. Provenance and checksums are content records, not third-party signatures. The release tag/assets stay at the verified source revision; this post-release evidence is added through a subsequent documentation PR.
