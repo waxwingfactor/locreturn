@@ -29,17 +29,17 @@ The public tag resolves to source commit `b4606c3d7e940a624c5c436d4bcf8b1ead0500
 
 Separate fresh environments installed the downloaded wheel and built/installed the downloaded sdist, using `--no-index` and predownloaded build-tool wheels for the latter. No editable installation, checkout import, `PYTHONPATH` or user-site leakage was used. Each installed artifact passed all **49 published acceptance tests**, the published demo, the console entrypoint, and an independently constructed workflow. Import origins were inside each environment's site-packages.
 
-For both installs, a Python audit hook blocked all socket events and a connection probe confirmed the block. The full tests, example and independent workflow then ran under that block. The independent workflow moved its catalogs/task/plan after review, preserved local target corrections and orphan targets, required source/context/target conflict decisions, checked receipt/output hashes and untouched input targets, and refused unresolved conflicts, stale-source incoming decisions and stale plans without final output.
+For both installs, a Python audit hook blocked all socket events and a connection probe confirmed the block. The full tests, example and independent workflow then ran under that block. The independent workflow moved its catalogs/task/plan after review, preserved local target corrections and orphan targets, required source/context/target conflict decisions, checked the receipt's output hash and untouched input targets, and refused unresolved conflicts, stale-source incoming decisions and stale plans without final output.
 
 The lead separately downloaded the actual public wheel anonymously (HTTP 200), checked the same SHA-256, installed it in another fresh environment with `--no-index --no-deps`, verified isolated import/version and ran the installed console help. An initial lead harness used a virtual-environment API that failed to bootstrap this bundled interpreter; changing that harness to the documented `python -m venv` command succeeded. No published artifact was changed.
 
-The [independent verifier](verify_public_release.py) is preserved for reproduction. It fetches public assets and the public tag, has no local-dist fallback, and requires a new output directory:
+The [independent verifier](verify_public_release.py) is preserved for reproduction. It fetches public assets and the public tag, has no local-dist fallback, and requires a new output directory outside source trees/Git checkouts. The reproduction script now detects and enforces that boundary; the original run's reported directory was also outside the development checkout. For example on macOS/Linux (on Windows use a new directory in the OS temporary folder):
 
 ```sh
 python3.12 docs/verify_public_release.py \
   --release-url https://github.com/waxwingfactor/locreturn/releases/tag/v1.0.0 \
   --source-commit b4606c3d7e940a624c5c436d4bcf8b1ead050083 \
-  --ci-run-id 38794149241 --out verification-run
+  --ci-run-id 38794149241 --out /tmp/locreturn-verification-run
 ```
 
 This record describes synthetic acceptance scenarios, not customer adoption, translation-quality validation or production deployment. Public wheel/sdist verification was on one macOS/Python environment; cross-platform evidence is the separate CI matrix. Provenance and checksums are content records, not third-party signatures. The release tag/assets stay at the verified source revision; this post-release evidence is added through a subsequent documentation PR.

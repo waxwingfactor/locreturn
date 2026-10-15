@@ -197,6 +197,12 @@ def main():
           "This verifier targets the actual public locreturn v1.0.0 release")
     check(re.fullmatch(r"[0-9a-f]{40}", args.source_commit), "Full expected source SHA required")
     ROOT = args.out.resolve()
+    script_root = Path(__file__).resolve().parent.parent
+    inside_source_tree = ((script_root / "pyproject.toml").is_file()
+                          and ROOT.is_relative_to(script_root))
+    inside_git_checkout = any((parent / ".git").exists() for parent in [ROOT, *ROOT.parents])
+    outside_checkout = not (inside_source_tree or inside_git_checkout)
+    check(outside_checkout, "--out must be a new directory outside source trees/Git checkouts; use an OS temporary directory")
     ROOT.mkdir()
     downloads = ROOT / "downloads"
     downloads.mkdir()
@@ -205,7 +211,7 @@ def main():
                 "release_url": args.release_url, "repository": REPO,
                 "expected_source_commit": args.source_commit,
                 "environment": {"python": platform.python_version(), "platform": platform.platform()},
-                "isolation": {"outside_checkout": True, "PYTHONPATH_removed": True,
+                "isolation": {"outside_checkout": outside_checkout, "PYTHONPATH_removed": True,
                               "user_site_disabled": True, "isolated_python_mode": True},
                 "commands": RECORDS, "status": "running"}
     try:
