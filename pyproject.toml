@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "locreturn"
+version = "1.0.0"
+description = "Source-aware reconciliation for offline JSON translation returns"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "locreturn contributors"}]
+dependencies = []
+classifiers = ["Programming Language :: Python :: 3", "Operating System :: OS Independent", "Topic :: Software Development :: Localization"]
+
+[project.scripts]
+locreturn = "locreturn.cli:main"
+
+[project.urls]
+Repository = "https://github.com/waxwingfactor/locreturn"
+Issues = "https://github.com/waxwingfactor/locreturn/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
