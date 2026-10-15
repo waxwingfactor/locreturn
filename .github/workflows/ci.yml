@@ -1,0 +1,91 @@
+name: CI
+on:
+  push:
+    branches: [main, 'feat/**', 'docs/**', 'fix/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python: '3.10'
+          - os: ubuntu-latest
+            python: '3.14'
+          - os: macos-latest
+            python: '3.12'
+          - os: windows-latest
+            python: '3.12'
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install .
+      - run: python -m unittest discover -s tests -v
+      - run: python examples/demo.py
+  distributions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install build
+      - run: python -m build
+      - name: Fresh wheel and sdist installations outside checkout
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os, pathlib, shutil, subprocess, sys, tarfile, tempfile
+          repo = pathlib.Path.cwd()
+          env = dict(os.environ)
+          env.pop('PYTHONPATH', None)
+          with tempfile.TemporaryDirectory() as tmp:
+              root = pathlib.Path(tmp)
+              source = root / 'source'
+              source.mkdir()
+              with tarfile.open(next((repo/'dist').glob('*.tar.gz'))) as archive:
+                  archive.extractall(source, filter='data')
+              extracted = next(source.iterdir())
+              assert (extracted/'docs/CONTRACTS.md').is_file()
+              for kind, artifact in [('wheel', next((repo/'dist').glob('*.whl'))), ('sdist', next((repo/'dist').glob('*.tar.gz')))]:
+                  venv = root / kind
+                  subprocess.run([sys.executable, '-m', 'venv', str(venv)], check=True)
+                  python = venv/'bin/python'
+                  subprocess.run([str(python), '-m', 'pip', 'install', str(artifact)], cwd=root, env=env, check=True)
+                  subprocess.run([str(python), '-I', '-m', 'unittest', 'discover', '-s', str(extracted/'tests'), '-v'], cwd=root, env=env, check=True)
+                  subprocess.run([str(python), '-I', str(extracted/'examples/demo.py')], cwd=root, env=env, check=True)
+                  subprocess.run([str(python), '-I', '-c', 'import locreturn; print(locreturn.__file__)'], cwd=root, env=env, check=True)
+          PY
+      - name: Record build provenance and checksums
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, pathlib, platform
+          files = sorted(pathlib.Path('dist').iterdir())
+          hashes = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
+          pathlib.Path('dist/SHA256SUMS').write_text(''.join(f'{h}  {n}\n' for n,h in hashes.items()))
+          manifest = {'repository': os.environ['GITHUB_REPOSITORY'], 'source_commit': os.environ['GITHUB_SHA'], 'run_url': f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}", 'python': platform.python_version(), 'artifacts': hashes}
+          pathlib.Path('dist/PROVENANCE.json').write_text(json.dumps(manifest, indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: distributions
+          path: dist/*
+  quality-gate:
+    if: always()
+    needs: [tests, distributions]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every matrix and distribution job
+        env:
+          TESTS_RESULT: ${{ needs.tests.result }}
+          DIST_RESULT: ${{ needs.distributions.result }}
+        run: test "$TESTS_RESULT" = success && test "$DIST_RESULT" = success
